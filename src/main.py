@@ -2,6 +2,8 @@ import pygame
 import os
 import random
 import ctypes
+from Player import Player_Ship
+from Enemy import Enemy_Ship, Enemy_Laser
 
 pygame.init()
 BG = pygame.image.load(os.path.join("assets", "background-black.png")) #background for game
@@ -32,165 +34,6 @@ BG_bigger = pygame.transform.scale(BG, (size)) #makes background fit the window
 pygame.display.set_caption("Space Cringe") #space cringe, haha
 
 
-
-
-
-#This is the class for the main enemy
-class Enemy_Ship():
-    colour_map = {
-
-    "red": (red_enemy, red_laser),
-    "blue": (blue_enemy, blue_laser),
-    "green": (green_enemy, green_laser)
-
-    #This is the map for the colours of the enemy, it gets randomized
-    }
-
-    #initiation of the enemy
-    def __init__(self, x, y, health = 100):
-        self.x = x
-        self.y = y
-        self.health = health
-        self.lasers = []
-        self.ship_img, self.laser_img = self.colour_map[random.choice(["red", "blue", "green"])]
-        self.cool_down_counter = 0
-        self.mask = pygame.mask.from_surface(self.ship_img)
-        #basic initiation E.G where the ship spawns, its health, the lasers etc
-
-    def draw(self, screen):
-        screen.blit(self.ship_img, (self.x, self.y))
-        #draws the surface onto the screen
-    def get_width(self):
-        return self.ship_img.get_width()
-
-        #gets width
-    def get_height(self):
-        return self.ship_img.get_height()
-        #gets height
-    def move(self, vel):
-        self.y += vel
-        #moves the surface down the screen
-    def life_loss(self, y, Fatalities):
-        if self.y < height:
-            Fatalities += 1
-        #Adds 1 life from total Fatalities if enemy gets past
-
-    #shoots the laser from the enemy
-    def shoot(self, laser_vel, shoot_speed):
-        if self.cool_down_counter == 60:
-            laser = Enemy_Laser(self.x - (self.get_width()/2), self.y + 10, self.laser_img)
-            self.lasers.append(laser)
-            self.cool_down_counter -= 60
-
-        for laser in self.lasers:
-            laser.move(laser_vel)
-            if laser.y < -50:
-                self.lasers.remove(laser)
-
-    #collision detection for player
-    def laser_hit_player(self, player):
-        for laser in self.lasers:
-            if laser.collision(player):
-                player.health -= 10
-                self.lasers.remove(laser)
-
-
-#class for the lasers
-class Enemy_Laser():
-    def __init__(self, x, y, img):
-        self.x = x
-        self.y = y
-        self.img = img
-        self.mask = pygame.mask.from_surface(self.img)
-
-    #draws the laser
-    def draw(self, screen):
-        screen.blit(self.img, (self.x, self.y))
-
-    #moves the laser
-    def move(self, vel):
-        self.y += vel
-
-    #collision detection
-    def collision(obj1, obj2):
-        offset_x = int(obj2.x) - int(obj1.x)
-        offset_y = int(obj2.y) - int(obj1.y)
-        return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
-
-
-#This is the class for the main player, same as for enemy
-class Player_Ship():
-    def __init__(self, x, y, health = 100):
-        self.x = x
-        self.y = y
-        self.health = health
-        self.ship_img = small_pixel_ship
-        self.ship_laser = pixel_ship_shoot
-        self.mask = pygame.mask.from_surface(self.ship_img)
-        self.max_health = health
-        self.cool_down_counter = 0
-        self.lasers = []
-
-    #draws the player onto the screen
-    def draw(self, screen):
-        health_percentage = self.health/100
-        screen.blit(self.ship_img, (self.x, self.y))
-        pygame.draw.rect(screen, (255,0,0), (self.x, self.y + self.get_height() + 10, self.get_width(), 10 ))
-        if self.health > 0:
-            pygame.draw.rect(screen, (0,255,0), (self.x, self.y + self.get_height() + 10, self.get_width()*health_percentage , 10 ))
-
-    #gets width    
-    def get_width(self):
-        return self.ship_img.get_width()
-
-    #gets height
-    def get_height(self):
-        return self.ship_img.get_height()
-
-    #shoots laser from ship
-    def shoot(self, laser_vel, Fatalities, shoot_speed):
-        if self.cool_down_counter == 20 and Fatalities < 5 and self.health > 0:
-            laser = Player_Laser(self.x - self.get_width()/2, self.y - 10, self.ship_laser)
-            self.lasers.append(laser)
-            self.cool_down_counter -= 20
-
-    #moves the laser
-    def move_laser(self, laser_vel):
-        for laser in self.lasers:
-            laser.move(laser_vel)
-            if laser.y < -50:
-                self.lasers.remove(laser)
-
-    #collision detection for enemy
-    def laser_hit_enemy(self, enemies):
-        for enemy in enemies:
-            for laser in self.lasers:
-                if laser.collision(enemy):
-                    enemies.remove(enemy)
-                    self.lasers.remove(laser)
-
-
-#class for the lasers
-class Player_Laser():
-    def __init__(self, x, y, img):
-        self.x = x
-        self.y = y
-        self.img = img
-        self.mask = pygame.mask.from_surface(self.img)
-
-    #draws the laser
-    def draw(self, screen):
-        screen.blit(self.img, (self.x, self.y))
-
-    #moves the laser
-    def move(self, vel):
-        self.y -= vel
-
-    #collision detection
-    def collision(obj1, obj2):
-        offset_x = int(obj2.x) - int(obj1.x)
-        offset_y = int(obj2.y) - int(obj1.y)
-        return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
 
 
 #main program
@@ -226,11 +69,7 @@ def main():
     "1": ('Goodluck, you will need it'),
     "2": ('Wow, you really are a n00b'),
     "3": ('If you die now, uninstall the game and never play again'),
-    "4": ('Did you know I made this game? I am so cool, I am the best at everything, I am the best at coding'),
-
-
-
-
+    "4": ('Did you know I made this game? I am so cool, I am the best at everything, I am the best at coding')
     }
 
 
