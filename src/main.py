@@ -67,9 +67,9 @@ def main():
     cringe_text_lib = {
 
     "1": ('Goodluck, you will need it'),
-    "2": ('Wow, you really are a n00b'),
+    "2": ('Wow, you really are a terrible'),
     "3": ('If you die now, uninstall the game and never play again'),
-    "4": ('Did you know I made this game? I am so cool, I am the best at everything, I am the best at coding')
+    "4": ('Did you know I made this game? I am so cool, I am the best')
     }
 
 
@@ -88,6 +88,7 @@ def main():
 
 
         # This is the round logic, if game_break is = True, game will be on break, otherwise, it will not
+
         if len(enemies) == 0 and Fatalities < 5 and main_player.health > 0: # If there are no enemies and player still has Fatalities and health left
             level_cooldown += 1 # Level_cooldown will be icnremented by 60 times a second
             if level_cooldown >= 240: # If level_cooldown is 240, or if 3 seconds pass then:
@@ -104,6 +105,7 @@ def main():
                 for i in range(0, wave_length):
                     enemy = Enemy_Ship(random.randrange(0, width-100), random.randrange(-500, -30))
                     enemies.append(enemy)
+
         # End of round logic
 
         # This is the enemy logic
@@ -140,26 +142,24 @@ def main():
 
 
 
-
+        #Fix key and mouse functionality
         #this is to turn button presses into an action
         for event in pygame.event.get():
             keys = pygame.key.get_pressed()
+
             if event.type == pygame.QUIT:
                 run = False
 
             if keys[pygame.K_a] and main_player.x > 10:
                 main_player.x -= speed
-            if keys[pygame.K_d] and main_player.x < width - main_player.get_width() - 10:
+            if keys[pygame.K_d] or keys[pygame.K_RIGHT] and main_player.x < width - main_player.get_width() - 10:
                 main_player.x += speed
-            if keys[pygame.K_w] and main_player.y > 10:
+            if keys[pygame.K_w] or keys[pygame.K_UP] and main_player.y > 10:
                 main_player.y -= speed
-            if keys[pygame.K_s] and main_player.y < height - main_player.get_height() - 10:
+            if keys[pygame.K_s] or keys[pygame.K_DOWN] and main_player.y < height - main_player.get_height() - 10:
                 main_player.y += speed
             if keys[pygame.K_ESCAPE]:
                 run = False
-
-
-
 
 
         #start of the function that draws everything onto the window
@@ -167,7 +167,7 @@ def main():
             screen.blit(BG_bigger, (0,0))
             screen.blit(Fatalities_label, (10, 10))
             screen.blit(level_label, (10, level_label.get_height()+10))
-
+    
             # Get the current position of the cursor
             cursor_position = pygame.mouse.get_pos()
 
