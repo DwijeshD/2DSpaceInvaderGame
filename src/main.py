@@ -316,6 +316,8 @@ def main():
                 main_player.y -= speed
             if keys[pygame.K_s] and main_player.y < height - main_player.get_height() - 10:
                 main_player.y += speed
+            if keys[pygame.K_ESCAPE]:
+                run = False
 
 
 
